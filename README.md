@@ -6,7 +6,7 @@ The image also contains a current version of the [aws-cli](https://docs.aws.amaz
 
 ## Usage
 
-YOu can directly use the image from docker.io: `docker run --rm -it benekenobi/ngs-bits:latest` (latest release veresion, currently _2025_01_).
+You can directly use the image from docker.io: `docker run --rm -it benekenobi/ngs-bits:latest` (latest release version, currently _2025_01_).
 
 ## Build
 
