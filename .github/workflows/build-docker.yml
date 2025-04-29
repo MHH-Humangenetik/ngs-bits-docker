@@ -20,6 +20,9 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     permissions:
       contents: read # Needed to check out the repository
       packages: write # Needed to push Docker images (though we push to Docker Hub here)
@@ -46,10 +49,12 @@ jobs:
         with:
           images: benekenobi/ngs-bits
           tags: |
+            # Add suffix for matrix architecture
+            suffix=-{{matrix.arch}}
             # Handle tag push event (use the git tag, e.g., v1.2.3)
             type=ref,event=tag
             # Handle tag push event (add 'latest' tag for highest YYYY_MM tag based on lexical sort)
-            type=match,pattern=\\d{4}_\\d{2},group=0,sort=lexical,enable=${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+            type=match,pattern='\d{4}_\d{2}',grup=0,srt=lexical,enable=${{ github.event_name == 'push' && github.ref_type == 'tag' }}
             # Handle manual trigger tag input if provided
             type=raw,value=${{ github.event.inputs.docker_tag }},enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.docker_tag != '' }}
             # Handle manual trigger, tag as 'master' if building master and no explicit tag given
@@ -72,12 +77,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/${{ matrix.arch }} # Use matrix arch here
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NGS_BITS_VERSION=${{ steps.ngs_version.outputs.ngs_bits_version }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.arch }} # Scope cache per architecture
+          cache-to: type=gha,mode=max,scope=${{ matrix.arch }} # Scope cache per architecture
 
