@@ -24,9 +24,13 @@ RUN apt-get update && \
         python3-matplotlib \
         libbz2-dev \
         liblzma-dev \
+        libxml2-dev \
         libcurl4 \
         libcurl4-openssl-dev \
         zlib1g-dev \
+        curl \
+        gnupg \
+        pkg-config \
         ca-certificates \
         wget \
         curl \
@@ -67,15 +71,14 @@ RUN apt-get remove -y \
         libqt5svg5-dev \
         libbz2-dev \
         liblzma-dev \
+        libxml2-dev \
         libcurl4 \
         zlib1g-dev \
-        wget \
         curl \
         unzip
 RUN apt-get install -y \
         libqt5network5 \
-        libqt5xml5 \
-        libqt5xmlpatterns5
+        libqt5xml5
 RUN apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
