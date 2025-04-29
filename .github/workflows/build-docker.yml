@@ -21,6 +21,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # Don't cancel other jobs if one fails
       matrix:
         arch: [amd64, arm64]
     permissions:
@@ -51,14 +52,10 @@ jobs:
           tags: |
             # Handle tag push event (use the git tag, e.g., v1.2.3)
             type=ref,event=tag
-            # Handle tag push event (add 'latest' tag for highest YYYY_MM tag based on lexical sort)
-            type=match,pattern='\d{4}_\d{2}',grup=0,srt=lexical,enable=${{ github.event_name == 'push' && github.ref_type == 'tag' }}
             # Handle manual trigger tag input if provided
             type=raw,value=${{ github.event.inputs.docker_tag }},enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.docker_tag != '' }}
             # Handle manual trigger, tag as 'master' if building master and no explicit tag given
             type=raw,value=master,enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.docker_tag == '' && (github.event.inputs.ngs_bits_version == 'master' || github.event.inputs.ngs_bits_version == '') }}
-            # Handle manual trigger, tag as 'latest' if building non-master and no explicit tag given
-            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.docker_tag == '' && github.event.inputs.ngs_bits_version != 'master' && github.event.inputs.ngs_bits_version != '' }}
 
       - name: Determine NGS-bits Version
         id: ngs_version
