@@ -49,8 +49,6 @@ jobs:
         with:
           images: benekenobi/ngs-bits
           tags: |
-            # Add suffix for matrix architecture
-            suffix=-{{matrix.arch}}
             # Handle tag push event (use the git tag, e.g., v1.2.3)
             type=ref,event=tag
             # Handle tag push event (add 'latest' tag for highest YYYY_MM tag based on lexical sort)
