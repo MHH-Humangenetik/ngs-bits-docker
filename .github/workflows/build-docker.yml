@@ -20,10 +20,6 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false # Don't cancel other jobs if one fails
-      matrix:
-        arch: [amd64, arm64]
     permissions:
       contents: read # Needed to check out the repository
       packages: write # Needed to push Docker images (though we push to Docker Hub here)
@@ -72,12 +68,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/${{ matrix.arch }} # Use matrix arch here
+          platforms: linux/amd64,linux/arm64 # Build both platforms
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NGS_BITS_VERSION=${{ steps.ngs_version.outputs.ngs_bits_version }}
-          cache-from: type=gha,scope=${{ matrix.arch }} # Scope cache per architecture
-          cache-to: type=gha,mode=max,scope=${{ matrix.arch }} # Scope cache per architecture
+          cache-from: type=gha # Removed arch scope
+          cache-to: type=gha,mode=max # Removed arch scope
 
